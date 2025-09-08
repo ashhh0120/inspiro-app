@@ -2,34 +2,199 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Inspiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Inspiro (Mock)</title>
   <style>
-    :root{--w:820px}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:var(--w);margin:48px auto;padding:0 16px;line-height:1.6}
-    h1{font-size:28px;margin-bottom:4px}
-    h2{margin-top:24px}
-    .banner{padding:16px;border:1px solid #ddd;border-radius:12px;background:#fafafa}
+    :root{
+      --bg:#fffafc;
+      --ink:#222;
+      --ink-2:#555;
+      --brand:#ff7fb7;
+      --brand-2:#ffd7e8;
+      --stroke:#e8e8e8;
+      --card:#ffffff;
+      --radius:18px;
+      --w:980px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--ink);}
+    .wrap{max-width:var(--w);margin:40px auto;padding:0 16px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    h1{font-size:28px;margin:0;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+    h1 img{height:32px;width:32px;object-fit:contain;border-radius:6px;display:inline-block}
+    .pill{background:var(--brand-2);color:#b10f5f;padding:4px 10px;border-radius:999px;font-size:12px}
+    .panel{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.04)}
+    .row{display:grid;grid-template-columns:1fr auto auto;gap:10px}
+    .row > *{height:40px}
+    input[type="text"], select{width:100%;border:1px solid var(--stroke);border-radius:12px;padding:10px 12px;font-size:15px;background:#fff}
+    button{border:none;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn{background:var(--brand);color:#fff}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn-secondary{background:#f1f1f1;color:var(--ink-2)}
+    .controls{display:flex;gap:10px;align-items:center;margin-top:10px;color:var(--ink-2);font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:18px}
+    .card{background:var(--card);border:1px solid var(--stroke);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+    .thumb{aspect-ratio:4/3;object-fit:cover;width:100%;background:#f7f7f7}
+    .card-body{padding:10px 12px;display:flex;gap:8px;align-items:center}
+    .title{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+    .meta{font-size:12px;color:var(--ink-2)}
+    .spacer{flex:1}
+    .sel{transform:scale(1.2)}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+    .muted{color:var(--ink-2);font-size:13px}
+    .toast{position:fixed;inset:auto 16px 16px auto;background:#111;color:#fff;padding:10px 12px;border-radius:10px;opacity:0;transform:translateY(6px);transition:all .25s}
+    .toast.show{opacity:1;transform:translateY(0)}
   </style>
 </head>
 <body>
-  <div class="banner">
-    <h1>Inspiro</h1>
-    <p>If you can read this, GitHub Pages is serving <code>index.html</code> from the right folder ✅</p>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:10px">
+        <h1>
+          <img src="./logo.png" alt="Inspiro Logo" />
+          <span>Inspiro</span>
+        </h1>
+        <span class="pill">mock mode</span>
+      </div>
+      <a class="muted" href="https://ashhh0120.github.io/inspiro-privacy-policy/" target="_blank" rel="noopener">Privacy Policy ↗</a>
+    </header>
+
+    <div class="panel">
+      <div class="row">
+        <input id="q" type="text" placeholder="Describe what you want (e.g., 'minimal pink moodboard', 'cozy cafe interior')" />
+        <select id="board">
+          <option value="inspo">Board: Inspo (mock)</option>
+          <option value="mood">Board: Moodboard (mock)</option>
+          <option value="brand">Board: Brand (mock)</option>
+        </select>
+        <button id="searchBtn" class="btn">Search</button>
+      </div>
+      <div class="controls">
+        <label><input id="dedupeToggle" type="checkbox" checked /> Hide duplicates</label>
+        <label><input id="selectAllToggle" type="checkbox" /> Select all</label>
+        <span class="spacer"></span>
+        <span id="count" class="muted">0 results</span>
+      </div>
+
+      <div id="grid" class="grid" aria-live="polite"></div>
+
+      <div class="footer">
+        <span class="muted">Tip: This build uses mocked Unsplash-like data so you can test ranking & layout now.</span>
+        <div style="display:flex;gap:8px">
+          <button id="saveBtn" class="btn" disabled>Save selected to Pinterest (mock)</button>
+          <button id="clearBtn" class="btn-secondary">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="muted" style="margin:14px 2px">When Pinterest is approved, swap the mock search with real APIs and connect OAuth. The save button will call <code>POST /v5/pins</code> in production.</p>
   </div>
 
-  <h2>What it does</h2>
-  <ul>
-    <li>Searches Pinterest (with Unsplash fallback)</li>
-    <li>Ranks & de-duplicates images</li>
-    <li>Creates Pins on your chosen board</li>
-    <li>Optional logging to Google Sheets</li>
-  </ul>
+  <div id="toast" class="toast">Saved 0 pins (mock)</div>
 
-  <h2>Privacy</h2>
-  <p>Read our policy: <a href="https://ashhh0120.github.io/inspiro-privacy-policy/">inspiro-privacy-policy</a></p>
+  <script>
+    const MOCK_IMAGES = [
+      {id:"p1", url:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200", thumb:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600", title:"Minimal pink desk", likes:421, tags:["minimal","pink","workspace"]},
+      {id:"p2", url:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200", thumb:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600", title:"Cozy cafe corner", likes:733, tags:["cafe","cozy","wood"]},
+      {id:"p3", url:"https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200", thumb:"https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600", title:"Soft sunrise palette", likes:529, tags:["sunrise","pastel","palette"]},
+      {id:"p4", url:"https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1200", thumb:"https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=600", title:"Brand flatlay pink", likes:612, tags:["brand","flatlay","pink"]},
+      {id:"p5", url:"https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?w=1200", thumb:"https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?w=600", title:"Neutral moodboard", likes:388, tags:["moodboard","neutral","paper"]},
+      {id:"p6", url:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200", thumb:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600", title:"Minimal pink desk (alt)", likes:405, tags:["minimal","pink"]},
+      {id:"p7", url:"https://images.unsplash.com/photo-1529336953121-ad2d5b5f5d86?w=1200", thumb:"https://images.unsplash.com/photo-1529336953121-ad2d5b5f5d86?w=600", title:"Aesthetic shelf", likes:301, tags:["shelf","interior","soft"]},
+      {id:"p8", url:"https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?w=1200", thumb:"https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?w=600", title:"Pink blossoms", likes:462, tags:["flowers","pink","spring"]},
+      {id:"p9", url:"https://images.unsplash.com/photo-1514517220035-2f0b76b0b22d?w=1200", thumb:"https://images.unsplash.com/photo-1514517220035-2f0b76b0b22d?w=600", title:"Workspace mood", likes:271, tags:["workspace","mood","neutral"]},
+      {id:"p10", url:"https://images.unsplash.com/photo-1472289065668-ce650ac443d2?w=1200", thumb:"https://images.unsplash.com/photo-1472289065668-ce650ac443d2?w=600", title:"Cafe latte art", likes:518, tags:["cafe","latte","brown"]},
+    ];
 
-  <h2>Contact</h2>
-  <p>Email: <a href="mailto:contact.inspiro.o@gmail.com">contact.inspiro.o@gmail.com</a></p>
+    const state = { results: [], selected: new Set() };
+    const byLikesDesc = (a,b) => (b.likes||0) - (a.likes||0);
+    const dedupeByUrl = (arr) => {
+      const seen = new Map();
+      for(const it of arr){ if(!seen.has(it.url)) seen.set(it.url, it); }
+      return [...seen.values()];
+    };
+    function fuzzyIncludes(haystack, needle){
+      return haystack.toLowerCase().includes(needle.toLowerCase());
+    }
+    function searchMock(query, hideDups){
+      const q = (query||"").trim();
+      let hits = MOCK_IMAGES.filter(img => !q || fuzzyIncludes(img.title, q) || (img.tags||[]).some(t=>fuzzyIncludes(t,q)));
+      if(hideDups) hits = dedupeByUrl(hits);
+      return hits.sort(byLikesDesc).slice(0, 36);
+    }
+
+    const grid = document.getElementById('grid');
+    const countEl = document.getElementById('count');
+    const saveBtn = document.getElementById('saveBtn');
+    const selectAllToggle = document.getElementById('selectAllToggle');
+
+    function render(){
+      grid.innerHTML = '';
+      for(const it of state.results){
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img class="thumb" src="${it.thumb}" alt="${it.title}" loading="lazy" />
+          <div class="card-body">
+            <input class="sel" type="checkbox" data-id="${it.id}" ${state.selected.has(it.id)?'checked':''} />
+            <div>
+              <div class="title" title="${it.title}">${it.title}</div>
+              <div class="meta">❤ ${it.likes.toLocaleString()} • ${it.tags.slice(0,3).join(', ')}</div>
+            </div>
+            <span class="spacer"></span>
+            <a class="meta" href="${it.url}" target="_blank" rel="noopener">Open ↗</a>
+          </div>`;
+        grid.appendChild(card);
+      }
+      countEl.textContent = `${state.results.length} result${state.results.length===1?'':'s'}`;
+      saveBtn.disabled = state.selected.size === 0;
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      state.selected.clear();
+      const q = document.getElementById('q').value;
+      const hideDups = document.getElementById('dedupeToggle').checked;
+      state.results = searchMock(q, hideDups);
+      selectAllToggle.checked = false;
+      render();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      document.getElementById('q').value='';
+      state.results=[]; state.selected.clear();
+      render();
+    });
+
+    grid.addEventListener('change', (e)=>{
+      if(e.target && e.target.matches('.sel')){
+        const id = e.target.getAttribute('data-id');
+        if(e.target.checked) state.selected.add(id); else state.selected.delete(id);
+        saveBtn.disabled = state.selected.size === 0;
+      }
+    });
+
+    selectAllToggle.addEventListener('change', (e)=>{
+      const check = e.target.checked;
+      state.selected.clear();
+      for(const it of state.results){ if(check) state.selected.add(it.id); }
+      render();
+    });
+
+    saveBtn.addEventListener('click', ()=>{
+      const chosen = state.results.filter(r=>state.selected.has(r.id));
+      const board = document.getElementById('board').value;
+      showToast(`Saved ${chosen.length} pin${chosen.length===1?'':'s'} to \"${board}\" (mock)`);
+      console.log('Would create pins:', chosen.map(c=>({board, title:c.title, image_url:c.url})));
+    });
+
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 2200);
+    }
+
+    state.results = searchMock('pink', true);
+    render();
+  </script>
 </body>
 </html>
